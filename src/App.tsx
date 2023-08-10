@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import WebCam from "react-webcam";
 import "./App.css";
 import {
@@ -223,9 +223,6 @@ function App() {
     if (!mediaRecordRef.current) return;
 
     mediaRecordRef.current.stop();
-
-    // if (mediaRecordRef.current)
-    //   mediaStream.current.getTracks().forEach((track) => track.stop());
   };
   const onResolutionChange = (
     event: ChangeEvent<HTMLSelectElement> & {
@@ -248,17 +245,8 @@ function App() {
   ) => {
     setCurrentFrameRate(event.target.value);
   };
-
-  const videoConstraints = useMemo<MediaStreamConstraints["video"]>(() => {
-    const [mediaWidth, mediaHeight] =
-      currentResolution === "default" ? [] : currentResolution.split("x");
-    return {
-      width: Number(mediaWidth),
-      height: Number(mediaHeight),
-      frameRate:
-        currentFrameRate === "default" ? undefined : Number(currentFrameRate),
-    };
-  }, [currentFrameRate, currentResolution]);
+  const [mediaWidth, mediaHeight] =
+    currentResolution === "default" ? [] : currentResolution.split("x");
 
   return (
     <div
@@ -299,7 +287,14 @@ function App() {
         <div style={{ flex: 8 }}>
           <WebCam
             style={{ height: "60vh", backgroundColor: "greenyellow" }}
-            videoConstraints={videoConstraints}
+            videoConstraints={{
+              width: Number(mediaWidth),
+              height: Number(mediaHeight),
+              frameRate:
+                currentFrameRate === "default"
+                  ? undefined
+                  : Number(currentFrameRate),
+            }}
             ref={webCamRef}
             audio={false}
           />
